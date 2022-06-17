@@ -1,10 +1,8 @@
 name: builder
 on:
   push:
-    branches:
-      - master
     tags:
-      - v*.*.*
+      - '*'
 
 jobs:
   docker:
@@ -44,11 +42,12 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          platforms: linux/arm, linux/arm64, linux/amd64
+          platforms: linux/arm64, linux/amd64
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${GITHUB_REF##*/}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
         
