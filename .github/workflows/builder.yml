@@ -2,7 +2,7 @@ name: builder
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
 
 jobs:
   docker:
@@ -38,6 +38,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx
 
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+        with:
+          strip_v: true
+
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -47,7 +53,7 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${GITHUB_REF##*/}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{steps.tag.outputs.tag}}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
         
