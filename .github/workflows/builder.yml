@@ -41,17 +41,17 @@ jobs:
             ${{ runner.os }}-buildx
 
       - name: Build and push
-          uses: docker/build-push-action@v3
-          with:
-            context: .
-            platforms: linux/arm, linux/arm64, linux/amd64
-            push: true
-            tags: |
-              ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
-              ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
-            cache-from: type=local,src=/tmp/.buildx-cache
-            cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-          
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/arm, linux/arm64, linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
