@@ -1,4 +1,8 @@
-# caddy-cloudflare
-build caddy with cloudflare
+# caddy-builder-x
 
-docker pull usc3l/caddy-cloudflare:latest
+## build caddy with 
+- caddy-dns/cloudflare
+- mholt/caddy-webdav
+
+## docker
+docker pull usc3l/caddy-builder-x:latest
