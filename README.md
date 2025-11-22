@@ -12,3 +12,6 @@ https://hub.docker.com/r/usc3l/caddy-xbuilder
 
 ## github
 https://github.com/usc/caddy-xbuilder
+
+## caddy
+https://github.com/caddyserver/caddy/releases
