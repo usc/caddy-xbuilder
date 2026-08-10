@@ -18,18 +18,27 @@ https://github.com/caddyserver/caddy/releases
 
 ## version
 
-Dockerfile 默认使用 Caddy 大版本 `caddy:2`（alpine 基础镜像），Caddy 发布新版本后只需打 tag（如 `v2.12.0`），GitHub Actions 即会触发重新构建并拉取最新版本，无需手动修改 Dockerfile。
+Dockerfile 默认使用 Caddy 大版本 `caddy:2`，Caddy 发布新版本后只需打 tag（如 `v2.12.0`），GitHub Actions 即会触发重新构建并拉取最新版本，无需手动修改 Dockerfile。
 
-如需临时锁定某个版本，在 workflow 中传 build arg：
+workflow 会同时构建并推送 debian 与 alpine 两个变体：
 
-```yaml
-build-args: |
-  CADDY_VERSION=2.11
+| tag | 基础镜像 |
+| --- | --- |
+| `latest` | debian |
+| `2` | debian |
+| `2.12.0` | debian |
+| `latest-alpine` | alpine |
+| `2-alpine` | alpine |
+| `2.12.0-alpine` | alpine |
+
+如需本地手动锁定某个版本，可用 build arg：
+
+```bash
+docker build --build-arg CADDY_VERSION=2.11 .
 ```
 
-如需切回 debian 基础镜像，传：
+如需手动切回 debian 基础镜像：
 
-```yaml
-build-args: |
-  CADDY_VARIANT=
+```bash
+docker build --build-arg CADDY_VARIANT= .
 ```

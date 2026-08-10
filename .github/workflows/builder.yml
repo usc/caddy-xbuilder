@@ -39,20 +39,46 @@ jobs:
             ${{ runner.os }}-buildx
 
       - name: Get tag
-        run: echo "TAG=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        run: |
+          echo "TAG=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+          MAJOR=$(echo "${GITHUB_REF#refs/tags/v}" | cut -d. -f1)
+          echo "MAJOR=${MAJOR}" >> $GITHUB_ENV
 
-      - name: Build and push
+      - name: Build and push (debian)
         uses: docker/build-push-action@v3
         with:
           context: .
           platforms: linux/arm64, linux/amd64
           push: true
+          build-args: |
+            CADDY_VARIANT=
           tags: |
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ env.TAG }}
+            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ env.MAJOR }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ env.TAG }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ env.MAJOR }}
+          cache-from: type=local,src=/tmp/.buildx-cache/debian
+          cache-to: type=local,dest=/tmp/.buildx-cache-new/debian,mode=max
+
+      - name: Build and push (alpine)
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/arm64, linux/amd64
+          push: true
+          build-args: |
+            CADDY_VARIANT=-alpine
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest-alpine
+            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ env.TAG }}-alpine
+            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ env.MAJOR }}-alpine
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest-alpine
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ env.TAG }}-alpine
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ env.MAJOR }}-alpine
+          cache-from: type=local,src=/tmp/.buildx-cache/alpine
+          cache-to: type=local,dest=/tmp/.buildx-cache-new/alpine,mode=max
         
       - name: Move cache
         run: |
