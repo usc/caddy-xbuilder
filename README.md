@@ -31,14 +31,14 @@ workflow 会同时构建并推送 debian 与 alpine 两个变体：
 | `2-alpine` | alpine |
 | `2.12.0-alpine` | alpine |
 
-如需本地手动锁定某个版本，可用 build arg：
+默认构建 alpine 变体。如需手动切回 debian 基础镜像：
+
+```bash
+docker build --build-arg CADDY_BUILDER=caddy:2-builder --build-arg CADDY_BASE=caddy:2 .
+```
+
+如需锁定某个版本：
 
 ```bash
 docker build --build-arg CADDY_VERSION=2.11 .
-```
-
-如需手动切回 debian 基础镜像：
-
-```bash
-docker build --build-arg CADDY_VARIANT= .
 ```
